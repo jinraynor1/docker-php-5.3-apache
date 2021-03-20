@@ -1,3 +1,8 @@
+# Forked from [cristianorsolin/docker-php-5.3-apache](https://github.com/cristianorsolin/docker-php-5.3-apache)
+ Modified to use mysqlnd for pdo driver, !Warning i have discarded the SSL verifier when building, dont use this version for production, use the original.
+ 
+
+
 # PHP 5.3 Apache
 
 PHP 5.3 [reached EOL](http://php.net/eol.php) on 14 Aug 2014 and thus, official docker support was [dropped](https://github.com/docker-library/php/pull/20). I still needed to run 5.3 so I built this image based on the latest official builds of PHP.
@@ -18,7 +23,7 @@ For PHP projects run through the command line interface (CLI), you can do the fo
 
 ### Create a `Dockerfile` in your PHP project
 
-    FROM orsolin/php:5.3-apache
+    FROM jinraynor1/php5.3
     COPY . /usr/src/myapp
     WORKDIR /usr/src/myapp
     CMD [ "php", "./your-script.php" ]
@@ -32,14 +37,14 @@ Then, run the commands to build and run the Docker image:
 
 For many simple, single file projects, you may find it inconvenient to write a complete `Dockerfile`. In such cases, you can run a PHP script by using the PHP Docker image directly:
 
-    docker run -it --rm --name my-running-script -v "$PWD":/usr/src/myapp -w /usr/src/myapp orsolin/php:5.3-apache php your-script.php
+    docker run -it --rm --name my-running-script -v "$PWD":/usr/src/myapp -w /usr/src/myapp jinraynor1/php5.3 php your-script.php
 
 ### Installing modules
 
 To install additional modules use a `Dockerfile` like this:
 
 ``` Dockerfile
-FROM orsolin/php:5.3-apache
+FROM jinraynor1/php5.3
 
 # Installs curl
 RUN docker-php-ext-install curl
@@ -55,7 +60,7 @@ $ docker build -t my-php .
 
 If you don't want to include a `Dockerfile` in your project, it is sufficient to do the following:
 
-    docker run -it --rm --name my-php-app -v "$PWD":/var/www/html orsolin/php:5.3-apache
+    docker run -it --rm --name my-php-app -v "$PWD":/var/www/html jinraynor1/php5.3
 
 ## Credits
 
