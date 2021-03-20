@@ -40,11 +40,6 @@ COPY apache2.conf /etc/apache2/apache2.conf
 ENV PHP_INI_DIR /etc/php5/apache2
 RUN mkdir -p $PHP_INI_DIR/conf.d
 
-ENV GPG_KEYS 0B96609E270F565C13292B24C13C70B87267B52D 0A95E9A026542D53835E3F3A7DEC4E69FC9C83D7 0E604491
-RUN set -xe \
-  && for key in $GPG_KEYS; do \
-    gpg --keyserver pgp.mit.edu --recv-keys "$key"; \
-  done
 
 # compile openssl, otherwise --with-openssl won't work
 RUN CFLAGS="-fPIC" && OPENSSL_VERSION="1.0.2d" \
@@ -52,7 +47,6 @@ RUN CFLAGS="-fPIC" && OPENSSL_VERSION="1.0.2d" \
       && mkdir openssl \
       && curl -sL "https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz" -o openssl.tar.gz \
       && curl -sL "https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz.asc" -o openssl.tar.gz.asc \
-      && gpg --verify openssl.tar.gz.asc \
       && tar -xzf openssl.tar.gz -C openssl --strip-components=1 \
       && cd /tmp/openssl \
       && ./config -fPIC && make && make install \
@@ -77,8 +71,6 @@ RUN buildDeps=" \
       && set -x \
       && apt-get update && apt-get install -y $buildDeps --no-install-recommends && rm -rf /var/lib/apt/lists/* \
       && curl -SL "http://php.net/get/php-$PHP_VERSION.tar.xz/from/this/mirror" -o php.tar.xz \
-      && curl -SL "http://php.net/get/php-$PHP_VERSION.tar.xz.asc/from/this/mirror" -o php.tar.xz.asc \
-      && gpg --verify php.tar.xz.asc \
       && mkdir -p /usr/src/php \
       && tar -xof php.tar.xz -C /usr/src/php --strip-components=1 \
       && rm php.tar.xz* \
@@ -92,7 +84,7 @@ RUN buildDeps=" \
             --enable-mysqlnd \
             --with-mysql \
             --with-mysqli \
-            --with-pdo-mysql \
+            --with-pdo-mysql=mysqlnd \
             --with-curl \
             --with-openssl=/usr/local/ssl \
             --enable-soap \
